@@ -1,3 +1,22 @@
+// create a budget and notification
+aws budgets create-budget \
+    --account-id $AWS_ACCOUNT_ID \
+    --budget file://json/budget.json \
+    --notifications-with-subscribers file://json/notifications-with-subscribers.json
+
+// // create sns topic 
+aws sns create-topic --name MyTopic
+
+// create sns subscription
+aws sns subscribe --topic-arn "arn:aws:sns:us-east-1:123456789:MyTopic" \
+  --protocol email \
+  --notification-endpoint example@gmail.com
+
+aws sns list-subscriptions-by-topic --topic-arn "arn:aws:sns:us-east-1:123456789:MyTopic"
+
+// create alarm for daily usage
+aws cloudwatch put-metric-alarm --cli-input-json file://json/alarm-config.json 
+
 export AWS_ACCESS_KEY_ID=""
 export AWS_SECREET_ACCESS_KEY=""
 export AWS_DEFAULT_REGION=""

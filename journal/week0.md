@@ -71,7 +71,7 @@ This is the most detailed level and focuses on the implementation details of ind
 
 6. Familiarized myself with the cloud services we will use during the bootcamp.
 
-AWS Service used
+#### AWS Service used
 
 1. Compute
 

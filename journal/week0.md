@@ -12,6 +12,11 @@
 
 5. Explored C4 Models for visualizing software architecture.
 
+6. Familiarized myself with the cloud services we will use during the bootcamp.
+
+
+#### The C4 Model
+
 The C4 Model is a framework for visualizing and documenting software architecture in a clear and structured way. It was created by Simon Brown and is widely used to communicate the architecture of a system to both technical and non-technical stakeholders. The model is based on the idea of abstraction and hierarchical decomposition, breaking down a system into four levels of detail:
 
 + Context
@@ -69,7 +74,6 @@ This is the most detailed level and focuses on the implementation details of ind
 + Scalability: It works well for both small and large systems, as it allows you to focus on the level of detail that matters most.
 + Tool Agnostic: The C4 Model can be created using any diagramming tool (e.g., Lucid Charts, Draw.io, or even pen and paper).
 
-6. Familiarized myself with the cloud services we will use during the bootcamp.
 
 #### AWS Service used
 

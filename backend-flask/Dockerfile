@@ -1,23 +1,24 @@
+# Use the official Python 3.10 slim image
 FROM python:3.10-slim-bookworm
 
-# Inside container. Make a new container inside the container
+# Set environment variables
+ENV FLASK_ENV=development
+ENV PORT=4567
+
+# Set the working directory inside the container
 WORKDIR /backend-flask
 
-# Outside -> Inside container. This contains the library we want to install to run the app  
-COPY requirements.txt requirements.txt
+# Copy the requirements file into the container
+COPY requirements.txt .
 
-# Inside Container. This is used to install the python libraries used for the app
-RUN pip3 install -r requirements.txt
+# Install Python dependencies
+RUN pip3 install --no-cache-dir -r requirements.txt
 
-# Outside -> Inside container. . means everything in the current directory
-# The first period(.) means, everything outside the /backend-flask outside container
-# The second period(.) means, everything outside the /backend-flask outside container
+# Copy the rest of the application code into the container
 COPY . .
 
-# set Environment Variables inside the container 
-ENV FLASK_ENV=development 
-
+# Expose the port the app will run on
 EXPOSE ${PORT}
 
-# python3 -m flask run host --host=0.0.0.0 --port=4567
+# Command to run the Flask application
 CMD ["python3", "-m", "flask", "run", "--host=0.0.0.0", "--port=4567"]

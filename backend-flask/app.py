@@ -14,16 +14,26 @@ from services.create_message import *
 from services.show_activity import *
 
 app = Flask(__name__)
-frontend = os.getenv('FRONTEND_URL')
-backend = os.getenv('BACKEND_URL')
+frontend = os.getenv('FRONTEND_URL', 'https://3000-ahmedlekan-awsbootcampc-8gz6szkbm46.ws-us117.gitpod.io')
+backend = os.getenv('BACKEND_URL', 'https://4567-ahmedlekan-awsbootcampc-8gz6szkbm46.ws-us117.gitpod.io')
 origins = [frontend, backend]
+
 cors = CORS(
   app, 
   resources={r"/api/*": {"origins": origins}},
-  expose_headers="location,link",
-  allow_headers="content-type,if-modified-since",
-  methods="OPTIONS,GET,HEAD,POST"
+  supports_credentials=True,
+  expose_headers=["location", "link"],
+  allow_headers=["content-type", "if-modified-since"],
+  methods=["OPTIONS", "GET", "HEAD", "POST"]
 )
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', frontend)
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    return response
 
 @app.route("/api/message_groups", methods=['GET'])
 def data_message_groups():

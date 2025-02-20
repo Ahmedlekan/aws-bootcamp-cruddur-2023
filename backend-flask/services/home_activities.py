@@ -5,7 +5,7 @@ class HomeActivities:
     results = [{
       'uuid': '68f126b0-1ceb-4a33-88be-d90fa7109eee',
       'handle':  'Andrew Brown',
-      'message': 'Cloud is fun!',
+      'message': 'Cloud is very fun!',
       'created_at': (now - timedelta(days=2)).isoformat(),
       'expires_at': (now + timedelta(days=5)).isoformat(),
       'likes_count': 5,
@@ -35,6 +35,15 @@ class HomeActivities:
       'uuid': '248959df-3079-4947-b847-9e0892d1bab4',
       'handle':  'Garek',
       'message': 'My dear doctor, I am just simple tailor',
+      'created_at': (now - timedelta(hours=1)).isoformat(),
+      'expires_at': (now + timedelta(hours=12)).isoformat(),
+      'likes': 0,
+      'replies': []
+    },
+    {
+      'uuid': '248959df-3079-4947-b847-9e0892d1bab4',
+      'handle':  'Ahmed',
+      'message': 'It took me 4 fours to solve the cor-origin and env problem.',
       'created_at': (now - timedelta(hours=1)).isoformat(),
       'expires_at': (now + timedelta(hours=12)).isoformat(),
       'likes': 0,

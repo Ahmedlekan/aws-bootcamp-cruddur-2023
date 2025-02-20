@@ -21,14 +21,24 @@ export default function HomeFeedPage() {
   const loadData = async () => {
     try {
       const backend_url = `${process.env.REACT_APP_BACKEND_URL}/api/activities/home`
+
+      console.log("Fetching from:", backend_url);
+
       const res = await fetch(backend_url, {
-        method: "GET"
+        method: "GET",
+        credentials: "include"
       });
       let resJson = await res.json();
+      
+      console.log("Response:", resJson);
+
       if (res.status === 200) {
-        setActivities(resJson)
-      } else {
-        console.log(res)
+        // Update the activities state with the fetched data
+        setActivities(resJson);
+      } else if (res.status === 401) {
+        console.log("Unauthorized: Please log in.");
+      } else if (res.status === 500) {
+        console.log("Server error: Please try again later.");
       }
     } catch (err) {
       console.log(err);

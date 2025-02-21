@@ -14,8 +14,8 @@ from services.create_message import *
 from services.show_activity import *
 
 app = Flask(__name__)
-frontend = os.getenv('FRONTEND_URL', 'https://3000-ahmedlekan-awsbootcampc-8gz6szkbm46.ws-us117.gitpod.io')
-backend = os.getenv('BACKEND_URL', 'https://4567-ahmedlekan-awsbootcampc-8gz6szkbm46.ws-us117.gitpod.io')
+frontend = os.getenv('FRONTEND_URL', 'https://3000-ahmedlekan-awsbootcampc-hidwag02z5t.ws-us117.gitpod.io')
+backend = os.getenv('BACKEND_URL', 'https://4567-ahmedlekan-awsbootcampc-hidwag02z5t.ws-us117.gitpod.io')
 origins = [frontend, backend]
 
 cors = CORS(

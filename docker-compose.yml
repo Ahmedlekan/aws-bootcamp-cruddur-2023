@@ -3,24 +3,57 @@ version: "3.8"
 services:
   backend-flask:
     environment:
-      - FRONTEND_URL:"https://3000-ahmedlekan-awsbootcampc-8gz6szkbm46.ws-us117.gitpod.io"
-      - BACKEND_URL:"https://4567-ahmedlekan-awsbootcampc-8gz6szkbm46.ws-us117.gitpod.io"
+      - FRONTEND_URL="https://3000-ahmedlekan-awsbootcampc-8gz6szkbm46.ws-us117.gitpod.io"
+      - BACKEND_URL="https://4567-ahmedlekan-awsbootcampc-8gz6szkbm46.ws-us117.gitpod.io"
     build: ./backend-flask
     ports:
       - "4567:4567"
     volumes:
       - ./backend-flask:/backend-flask
     command: python3 -m flask run --host=0.0.0.0 --port=4567
+    depends_on:
+      - postgres
+      - dynamodb
 
   frontend:
     environment:
-      - REACT_APP_BACKEND_URL:"https://4567-ahmedlekan-awsbootcampc-8gz6szkbm46.ws-us117.gitpod.io"
+      - REACT_APP_BACKEND_URL="https://4567-ahmedlekan-awsbootcampc-8gz6szkbm46.ws-us117.gitpod.io"
     build: ./frontend-react-js
     ports:
       - "3000:3000"
     volumes:
       - ./frontend-react-js:/frontend-react-js
     command: sh -c "npm install && npm start"
+
+  postgres:
+    image: postgres:13-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - internal-network
+
+  dynamodb:
+    user: root 
+    image: amazon/dynamodb-local:latest
+    container_name: dynamodb-local
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./docker/dynamodb:/home/dynamodblocal/data
+    working_dir: /home/dynamodblocal
+    command: -jar DynamoDBLocal.jar -sharedDb -dbPath ./data
+    networks:
+      - internal-network
+
+volumes:
+  postgres_data:
+  dynamodb_data:
 
 networks:
   internal-network:

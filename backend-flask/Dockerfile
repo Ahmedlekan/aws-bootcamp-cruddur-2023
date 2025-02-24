@@ -21,4 +21,4 @@ COPY . .
 EXPOSE ${PORT}
 
 # Command to run the Flask application
-CMD ["python3", "-m", "flask", "run", "--host=0.0.0.0", "--port=4567"]
+CMD ["./start.sh"]

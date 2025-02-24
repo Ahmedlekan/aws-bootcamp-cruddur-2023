@@ -69,13 +69,13 @@ To test the endpoint, use curl or open a browser:
 
 1. Using curl
 
-curl {https://300-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}/api/activities/home}
+curl {https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}/api/activities/home}
 
 2. Using a Browser
 
 Open your browser and navigate to:
 
-https://300-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}/api/activities/home
+https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}/api/activities/home
 
 Create a .gitignore file to exclude unnecessary files from the Docker build context:
 
@@ -100,31 +100,7 @@ CMD ["npm", "start"]
 
 A docker-compose.yml file allows you to define and run multi-container Docker applications.
 
-version: "3.8"
-
-services:
-  backend-flask:
-    environment:
-      - FRONTEND_URL:"https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
-      - BACKEND_URL:"https://4567-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
-    build: ./backend-flask
-    ports:
-      - "4567:4567"
-    volumes:
-      - ./backend-flask:/backend-flask
-  frontend:
-    environment:
-      REACT_APP_BACKEND_URL:"https://4567-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}" 
-    build: ./frontend-react-js
-    ports:
-      - "3000:3000"  # Example: Expose port 3000 for the frontend
-    volumes:
-      - ./frontend-react-js:/frontend-react-js
-
-networks:
-  internal-network:
-    driver: bridge
-    name: cruddur 
+ 
 
 ### How to Use the Docker Compose File
 1. Start the Services

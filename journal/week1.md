@@ -100,7 +100,7 @@ CMD ["npm", "start"]
 
 A docker-compose.yml file allows you to define and run multi-container Docker applications.
 
-![Cruddur Graphic](_docs/assets/code-1.png)
+![Cruddur Graphic](docs/assets/code-1.png)
 
 
 ### How to Use the Docker Compose File

@@ -25,3 +25,58 @@ The fractional CTO has suggested we first begin containerizing the applications 
 The fractional CTO has asked that everything be developed in Gitpod, (a Cloud Developer Environment). This will allow the CTO at a press of a button launch the developer environment in a clean state to help with any tricky or emergency implementations, and ensure developer accountability.
 
 Gitpod was since it supports multiple Version Control Services (VCS).. The company has invested considerable effort already in Atlassian JIRA working with the web-dev firm, and repo’s highly likely might be moved to Atlassian BitBucket to take advantage of better integrations within the Atlassian’s ecosystem.
+
+## Weekly Outcome
+- Gain practical knowledge working with common docker command and running container images for the purpose of local development
+- Gain practical knowledge of working within a Cloud Development environment
+- Be able to navigate a backend and front web-application and generally understand how they work
+
+## Containerized Backend
+# Use the official Python 3.10 slim image
+FROM python:3.10-slim-bookworm
+
+# Set the working directory inside the container
+WORKDIR /backend-flask
+
+# Copy the requirements file into the container
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application code into the container
+COPY . .
+
+# Set environment variables for Flask
+ENV FLASK_ENV=development
+ENV FLASK_APP=app.py  # Replace with your Flask app entry point if different
+
+# Expose the port the app will run on
+EXPOSE 4567
+
+# Command to run the Flask application
+CMD ["python3", "-m", "flask", "run", "--host=0.0.0.0", "--port=4567"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Homework Challenges
+

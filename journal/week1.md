@@ -51,38 +51,57 @@ CMD ["python3", "-m", "flask", "run", "--host=0.0.0.0", "--port=4567"]
 
 
 ## Build the Docker Image
+
 docker build -t backend-flask .
 
 ## Run the Docker Container
 - To run the container with default settings:
+
 docker run --rm -p 4567:4567 backend-flask
+
 - To run the container with environment variables:
+
 docker run --rm -p 4567:4567 -e FRONTEND_URL="*" -e BACKEND_URL="*" backend-flask
 
 ## Endpoint Testing
+
 To test the endpoint, use curl or open a browser:
+
 1. Using curl
+
 curl {https://300-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}/api/activities/home}
+
 2. Using a Browser
+
 Open your browser and navigate to:
+
 https://300-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}/api/activities/home
 
 Create a .gitignore file to exclude unnecessary files from the Docker build context:
 
 
 ## Containerized Frontend-react-js
+
 FROM node:16-alpine
+
 WORKDIR /frontend-react-js
+
 COPY package*.json ./
+
 RUN npm install
+
 COPY . .
+
 EXPOSE ${PORT} 
+
 CMD ["npm", "start"]
 
 ## Create docker compose yml file
+
 A docker-compose.yml file allows you to define and run multi-container Docker applications.
 
 version: "3.8"
+
 services:
   backend-flask:
     environment:

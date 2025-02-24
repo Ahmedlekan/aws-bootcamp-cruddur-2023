@@ -32,13 +32,21 @@ Gitpod was since it supports multiple Version Control Services (VCS).. The compa
 - Be able to navigate a backend and front web-application and generally understand how they work
 
 ## Containerized Backend
+
 FROM python:3.10-slim-bookworm
+
 WORKDIR /backend-flask
+
 COPY requirements.txt .
+
 RUN pip3 install --no-cache-dir -r requirements.txt
+
 COPY . .
+
 ENV FLASK_ENV=development
+
 EXPOSE ${PORT}
+
 CMD ["python3", "-m", "flask", "run", "--host=0.0.0.0", "--port=4567"]
 
 

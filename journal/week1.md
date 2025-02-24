@@ -35,7 +35,7 @@ Gitpod was since it supports multiple Version Control Services (VCS).. The compa
 ### Use the official Python 3.10 slim image
 FROM python:3.10-slim-bookworm
 
-#### Set the working directory inside the container
+### Set the working directory inside the container
 WORKDIR /backend-flask
 
 ### Copy the requirements file into the container

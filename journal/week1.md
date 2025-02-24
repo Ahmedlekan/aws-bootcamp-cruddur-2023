@@ -32,28 +32,13 @@ Gitpod was since it supports multiple Version Control Services (VCS).. The compa
 - Be able to navigate a backend and front web-application and generally understand how they work
 
 ## Containerized Backend
-### Use the official Python 3.10 slim image
 FROM python:3.10-slim-bookworm
-
-### Set the working directory inside the container
 WORKDIR /backend-flask
-
-### Copy the requirements file into the container
 COPY requirements.txt .
-
-### Install Python dependencies
 RUN pip3 install --no-cache-dir -r requirements.txt
-
-### Copy the rest of the application code into the container
 COPY . .
-
-### Set environment variables for Flask
 ENV FLASK_ENV=development
-
-### Expose the port the app will run on
 EXPOSE ${PORT}
-
-### Command to run the Flask application
 CMD ["python3", "-m", "flask", "run", "--host=0.0.0.0", "--port=4567"]
 
 
@@ -63,7 +48,6 @@ docker build -t backend-flask .
 ## Run the Docker Container
 - To run the container with default settings:
 docker run --rm -p 4567:4567 backend-flask
-
 - To run the container with environment variables:
 docker run --rm -p 4567:4567 -e FRONTEND_URL="*" -e BACKEND_URL="*" backend-flask
 
@@ -79,27 +63,13 @@ Create a .gitignore file to exclude unnecessary files from the Docker build cont
 
 
 ## Containerized Frontend-react-js
-### Use the official Node.js image for the frontend
 FROM node:16-alpine
-
-### Set the working directory inside the container
 WORKDIR /frontend-react-js
-
-### Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
-
-### Install dependencies
 RUN npm install
-
-### Copy the rest of the application code
 COPY . .
-
-### Expose the port the app will run on
 EXPOSE ${PORT} 
-
-# Command to start the application
 CMD ["npm", "start"]
-
 
 ## Create docker compose yml file
 A docker-compose.yml file allows you to define and run multi-container Docker applications.
@@ -214,9 +184,7 @@ networks:
 Run the following command to start all services defined in the docker-compose.yml file:
 docker-compose up
 
-
 ## Create a DynamoDb table locally in your environment
-
 aws dynamodb create-table \
     --endpoint-url http://localhost:8000 \
     --table-name Music \
@@ -228,7 +196,6 @@ aws dynamodb create-table \
     --table-class STANDARD
 
 ### create an Item
-
 aws dynamodb put-item \
     --endpoint-url http://localhost:8000 \
     --table-name Music  \
@@ -242,19 +209,19 @@ aws dynamodb put-item \
     --returned-consumed-capacity TOTAL
 
 ### Verify the Table and Items
-
 aws dynamodb list-tables --endpoint-url http://localhost:8000
 
 ### Scan Table
-
 aws dynamodb scan --endpoint-url http://localhost:8000 --table-name Music
 
 
 # install PostgreSQL locally on your environment
-
 curl -fssl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg
+
 echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d pgdg.list
+
 sudo apt update
+
 sudo apt install -y postgresql-client-13 libpq-dev
 
 To run

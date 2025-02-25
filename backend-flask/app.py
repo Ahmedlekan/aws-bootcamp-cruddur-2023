@@ -14,7 +14,27 @@ from services.messages import *
 from services.create_message import *
 from services.show_activity import *
 
+# Honeycomb========================================#
+from opentelemetry import trace
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.sdk.resources import Resource
+
+# Initialize tracing that can send data to honeycomb
+provider = TracerProvider()
+processor = BatchSpanProcessor(OTLPSpanExporter())
+provider.add_span_processor(processor)
+trace.set_tracer_provider(provider)
+tracer = trace.get_tracer(__name__)
+
 app = Flask(__name__)
+# Honeycomb
+FlaskInstrumentor().instrument_app(app)
+RequestsInstrumentor().instrument()
+
 frontend = os.getenv('FRONTEND_URL', "https://3000-ahmedlekan-awsbootcampc-1bic9nvbm12.ws-us118.gitpod.io")
 backend = os.getenv('BACKEND_URL', "https://4567-ahmedlekan-awsbootcampc-1bic9nvbm12.ws-us118.gitpod.io")
 origins = [frontend, backend]

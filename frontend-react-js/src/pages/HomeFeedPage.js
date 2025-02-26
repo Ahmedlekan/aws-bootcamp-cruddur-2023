@@ -22,16 +22,19 @@ export default function HomeFeedPage() {
     try {
       const backend_url = `${process.env.REACT_APP_BACKEND_URL}/api/activities/home`
 
+      console.log(backend_url)
+
       const res = await fetch(backend_url, {
         method: "GET",
-        credentials: "include"
       });
+
       let resJson = await res.json();
       
       console.log("Response:", resJson);
 
       if (res.status === 200) {
         // Update the activities state with the fetched data
+        console.log(resJson)
         setActivities(resJson);
       } else if (res.status === 401) {
         console.log("Unauthorized: Please log in.");
@@ -44,7 +47,7 @@ export default function HomeFeedPage() {
   };
 
   const checkAuth = async () => {
-    console.log('checkAuth')
+    
     // [TODO] Authenication
     if (Cookies.get('user.logged_in')) {
       setUser({

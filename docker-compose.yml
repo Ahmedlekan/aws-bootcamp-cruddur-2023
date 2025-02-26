@@ -3,8 +3,8 @@ version: "3.8"
 services:
   backend-flask:
     environment:
-      - FRONTEND_URL="https://3000-ahmedlekan-awsbootcampc-1bic9nvbm12.ws-us118.gitpod.io"
-      - BACKEND_URL="https://4567-ahmedlekan-awsbootcampc-1bic9nvbm12.ws-us118.gitpod.io"
+      - FRONTEND_URL="https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
+      - BACKEND_URL="https://4567-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
     build: ./backend-flask
     ports:
       - "4567:4567"
@@ -14,28 +14,21 @@ services:
     depends_on:
       - postgres
       - dynamodb
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4567/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:4567/health"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 10s
 
   frontend:
     environment:
-      - REACT_APP_BACKEND_URL="https://4567-ahmedlekan-awsbootcampc-1bic9nvbm12.ws-us118.gitpod.io"
+    - REACT_APP_BACKEND_URL:"https://4567-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}" 
     build: ./frontend-react-js
     ports:
       - "3000:3000"
     volumes:
       - ./frontend-react-js:/frontend-react-js
-    command: sh -c "npm install && npm start"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
 
   postgres:
     image: postgres:13-alpine
@@ -49,12 +42,12 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - internal-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
+    # healthcheck:
+    #   test: ["CMD-SHELL", "pg_isready -U postgres"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 10s
 
   dynamodb:
     user: root
@@ -68,12 +61,12 @@ services:
     command: -jar DynamoDBLocal.jar -sharedDb -dbPath ./data
     networks:
       - internal-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:8000"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 10s
 
 volumes:
   postgres_data:

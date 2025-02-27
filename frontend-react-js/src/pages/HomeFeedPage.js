@@ -26,6 +26,7 @@ export default function HomeFeedPage() {
 
       const res = await fetch(backend_url, {
         method: "GET",
+        credentials: "include"
       });
 
       let resJson = await res.json();

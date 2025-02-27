@@ -15,42 +15,46 @@ from services.create_message import *
 from services.show_activity import *
 
 # Honeycomb========================================#
-# from opentelemetry import trace
-# from opentelemetry.instrumentation.flask import FlaskInstrumentor
-# from opentelemetry.instrumentation.requests import RequestsInstrumentor
-# from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
-# from opentelemetry.sdk.trace import TracerProvider
-# from opentelemetry.sdk.trace.export import BatchSpanProcessor
-# from opentelemetry.sdk.resources import Resource
+from opentelemetry import trace
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.sdk.resources import Resource
 
 # Initialize tracing that can send data to honeycomb
-# provider = TracerProvider()
-# processor = BatchSpanProcessor(OTLPSpanExporter())
-# provider.add_span_processor(processor)
-# trace.set_tracer_provider(provider)
-# tracer = trace.get_tracer(__name__)
+provider = TracerProvider()
+processor = BatchSpanProcessor(OTLPSpanExporter())
+provider.add_span_processor(processor)
+trace.set_tracer_provider(provider)
+tracer = trace.get_tracer(__name__)
 
 app = Flask(__name__)
 # Honeycomb
-# FlaskInstrumentor().instrument_app(app)
-# RequestsInstrumentor().instrument()
+FlaskInstrumentor().instrument_app(app)
+RequestsInstrumentor().instrument()
 
-frontend = os.getenv('FRONTEND_URL', "https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}")
-backend = os.getenv('BACKEND_URL', "https://4567-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}")
+frontend = os.getenv('FRONTEND_URL', "https://3000-ahmedlekan-awsbootcampc-lkjwgr4ob2l.ws-us118.gitpod.io")
+backend = os.getenv('BACKEND_URL', "https://4567-ahmedlekan-awsbootcampc-lkjwgr4ob2l.ws-us118.gitpod.io")
 origins = [frontend, backend]
 
 cors = CORS(
   app, 
-  resources={r"/api/*": {"origins": origins}},
+  resources={r"/api/*": {"origins": "https://3000-ahmedlekan-awsbootcampc-lkjwgr4ob2l.ws-us118.gitpod.io"}},
   supports_credentials=True,
   expose_headers=["location", "link"],
-  allow_headers=["content-type", "if-modified-since"],
-  methods=["OPTIONS", "GET", "HEAD", "POST"]
+  allow_headers=[
+        "Content-Type",
+        "Authorization",
+        "Access-Control-Allow-Credentials"
+    ],
+  methods=["GET","POST","PUT", "PATCH","DELETE","OPTIONS"]
 )
 
 @app.after_request
 def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', frontend)
+    response.headers.add('Access-Control-Allow-Origin', "https://3000-ahmedlekan-awsbootcampc-lkjwgr4ob2l.ws-us118.gitpod.io")
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
     response.headers.add('Access-Control-Allow-Credentials', 'true')
@@ -91,10 +95,12 @@ def data_create_message():
     return model['data'], 200
   return
 
-@app.route("/api/activities/home", methods=['GET'])
+@app.route("/api/activities/home", methods=['GET', 'OPTIONS'])
 def data_home():
-  data = HomeActivities.run()
-  return data, 200
+    if request.method == 'OPTIONS':
+        return {}, 200
+    data = HomeActivities.run()
+    return data, 200
 
 @app.route("/api/activities/notifications", methods=['GET'])
 def data_notifications():

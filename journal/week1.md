@@ -37,17 +37,23 @@ CMD ["python3", "-m", "flask", "run", "--host=0.0.0.0", "--port=4567"]
 ```
 ### Build the Docker Image
 
-- docker build -t backend-flask .
+```bash
+docker build -t backend-flask .
+```
 
 ### Run the Docker Container
 
 To run the container with default settings:
 
-- docker run --rm -p 4567:4567 backend-flask
+```bash
+docker run --rm -p 4567:4567 backend-flask
+```
 
 To run the container with environment variables:
 
-- docker run --rm -p 4567:4567 -e FRONTEND_URL="*" -e BACKEND_URL="*" backend-flask
+```bash
+docker run --rm -p 4567:4567 -e FRONTEND_URL="*" -e BACKEND_URL="*" backend-flask
+```
 
 ### Endpoint Testing
 
@@ -55,13 +61,17 @@ To test the endpoint, use curl or open a browser:
 
 1. Using curl
 
-- curl {https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}/api/activities/home}
+```bash
+curl {https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}/api/activities/home}
+```
 
 2. Using a Browser
 
 Open your browser and navigate to:
 
-- https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}/api/activities/home
+```bash
+https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}/api/activities/home
+```
 
 Create a .gitignore file to exclude unnecessary files from the Docker build context
 
@@ -96,30 +106,38 @@ A docker-compose.yml file allows you to define and run multi-container Docker ap
 
 Run the following command to start all services defined in the docker-compose.yml file:
 
-- docker-compose up
+```bash
+docker-compose up
+```
 
 2. Stop the Services
 
 To stop the services, run:
 
-- docker-compose down
-
+```bash
+docker-compose down
+```
 3. Rebuild the Services
 
 If you make changes to the Dockerfiles or the docker-compose.yml file, rebuild the services:
 
-- docker-compose up --build
+```bash
+docker-compose up --build
+```
 
 4. View Logs
 
 To view logs for a specific service, use:
 
-- docker-compose logs <service-name>
+```bash
+docker-compose logs <service-name>
+```
 
 ### Run a local development environment with PostgreSQL, DynamoDB alongside your Flask backend and React frontend
 
 Update the compose file
 
+```bash
 version: "3.8"
 services:
   backend-flask:
@@ -180,15 +198,19 @@ networks:
   internal-network:
     driver: bridge
     name: cruddur
+```
 
 ### Start the Services
 
 Run the following command to start all services defined in the docker-compose.yml file:
 
-- docker-compose up
+```bash
+docker-compose up
+```
 
 ### Create a DynamoDb table locally in your environment
 
+```bash
 aws dynamodb create-table \
     --endpoint-url http://localhost:8000 \
     --table-name Music \
@@ -198,9 +220,10 @@ aws dynamodb create-table \
     --key-schema AttributeName=Artist,KeyType=HASH AttributeName=SongTitle,KeyType=RANGE \
     --billing-mode PAY_PER_REQUEST \
     --table-class STANDARD
-
+```
 ### create an Item
 
+```bash
 aws dynamodb put-item \
     --endpoint-url http://localhost:8000 \
     --table-name Music  \
@@ -212,28 +235,37 @@ aws dynamodb put-item \
     --item \
         '{"Artist": {"S": "No One You Know"}, "SongTitle": {"S": "Howdy"}, "AlbumTitle": {"S": "Somewhat Famous"}, "Awards": {"N": "2"}}'
     --returned-consumed-capacity TOTAL
+```
 
 ### Verify the Table and Items
 
+```bash
 aws dynamodb list-tables --endpoint-url http://localhost:8000
+```
 
 ### Scan Table
 
+```bash
 aws dynamodb scan --endpoint-url http://localhost:8000 --table-name Music
+```
 
 ### install PostgreSQL locally on your environment
 
-- curl -fssl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg
+```bash
+curl -fssl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg
 
-- echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d pgdg.list
+echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d pgdg.list
 
-- sudo apt update
+sudo apt update
 
-- sudo apt install -y postgresql-client-13 libpq-dev
+sudo apt install -y postgresql-client-13 libpq-dev
+```
 
 To run
 
-- psql -host localhost 
+```bash
+psql -host localhost
+```
 
 ### Container Security Best Practices
 

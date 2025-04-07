@@ -98,7 +98,35 @@ CMD ["npm", "start"]
 
 A docker-compose.yml file allows you to define and run multi-container Docker applications.
 
-![Cruddur Graphic](docs/assets/code-1.png)
+```bash
+version: "3.8"
+services:
+  backend-flask:
+    environment:
+      - FRONTEND_URL={"https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST"}
+      - BACKEND_URL={"https://4567-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST"}
+    build: ./backend-flask
+    ports:
+      - "4567:4567"
+    volumes:
+      - ./backend-flask:/backend-flask
+    command: python3 -m flask run --host=0.0.0.0 --port=4567
+
+  frontend:
+    environment:
+      - REACT_APP_BACKEND_URL={"https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST"}
+    build: ./frontend-react-js
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend-react-js:/frontend-react-js
+    command: sh -c "npm install && npm start"
+
+networks:
+  internal-network:
+    driver: bridge
+    name: cruddur
+```
 
 ### How to Use the Docker Compose File
 

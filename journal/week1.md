@@ -94,6 +94,18 @@ EXPOSE ${PORT}
 CMD ["npm", "start"]
 ```
 
+### Build the Docker Image
+
+```bash
+docker build -t frontend-react-js .
+```
+
+### Run the Docker Container
+
+```bash
+docker run -p 3000:3000 -e PORT=3000 frontend-react-js
+```
+
 ### Create docker compose yml file
 
 A docker-compose.yml file allows you to define and run multi-container Docker applications.

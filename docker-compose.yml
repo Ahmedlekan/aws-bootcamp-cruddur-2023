@@ -5,6 +5,8 @@ services:
     environment:
       - FRONTEND_URL=https://3000-ahmedlekan-awsbootcampc-6jpj4bnjp9w.ws-us118.gitpod.io
       - BACKEND_URL=https://4567-ahmedlekan-awsbootcampc-6jpj4bnjp9w.ws-us118.gitpod.io
+      - AWS_XRAY_URL= "*4567-ahmedlekan-awsbootcampc-6jpj4bnjp9w.ws-us118.gitpod.io"
+      - AWS_XRAY_DAEMON_ADDRESS = "xray_daemon:2000" 
     build: ./backend-flask
     ports:
       - "4567:4567"
@@ -74,6 +76,16 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
+  xray-daemon:
+    image: amazon/aws-xray-daemon
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: us-east-1
+    command:
+      - "xray -o -b xray-daemon:2000"
+    ports:
+    - "2000:2000/udp"
 
 volumes:
   postgres_data:

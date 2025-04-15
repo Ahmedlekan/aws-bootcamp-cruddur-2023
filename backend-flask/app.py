@@ -24,13 +24,13 @@ xray_url = os.getenv("AWS_XRAY_URL")
 xray_recorder.configure(service='backend-flask', dynamic_naming=xray_url)
 XRayMiddleware(app, xray_recorder)
 
-frontend = os.getenv('FRONTEND_URL', "https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}")
-backend = os.getenv('BACKEND_URL', "https://4567-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}")
+frontend = os.getenv('FRONTEND_URL', "https://3000-ahmedlekan-awsbootcampc-mkbruxb3sox.ws-us118.gitpod.io")
+backend = os.getenv('BACKEND_URL', "https://4567-ahmedlekan-awsbootcampc-mkbruxb3sox.ws-us118.gitpod.io")
 origins = [frontend, backend]
 
 cors = CORS(
   app, 
-  resources={r"/api/*": {"origins": "https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"}},
+  resources={r"/api/*": {"origins": "https://3000-ahmedlekan-awsbootcampc-mkbruxb3sox.ws-us118.gitpod.io"}},
   supports_credentials=True,
   expose_headers=["location", "link"],
   allow_headers=[
@@ -43,7 +43,7 @@ cors = CORS(
 
 @app.after_request
 def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', "https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}")
+    response.headers.add('Access-Control-Allow-Origin', "https://3000-ahmedlekan-awsbootcampc-mkbruxb3sox.ws-us118.gitpod.io")
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
     response.headers.add('Access-Control-Allow-Credentials', 'true')

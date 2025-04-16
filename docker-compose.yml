@@ -3,10 +3,13 @@ version: "3.8"
 services:
   backend-flask:
     environment:
-      - FRONTEND_URL=https://3000-ahmedlekan-awsbootcampc-mkbruxb3sox.ws-us118.gitpod.io
-      - BACKEND_URL=https://4567-ahmedlekan-awsbootcampc-mkbruxb3sox.ws-us118.gitpod.io
-      - AWS_XRAY_URL= "*4567-ahmedlekan-awsbootcampc-mkbruxb3sox.ws-us118.gitpod.io"
-      - AWS_XRAY_DAEMON_ADDRESS = "xray_daemon:2000" 
+      - FRONTEND_URL=https://3000-ahmedlekan-awsbootcampc-kl3gd35korz.ws-us118.gitpod.io
+      - BACKEND_URL=https://4567-ahmedlekan-awsbootcampc-kl3gd35korz.ws-us118.gitpod.io
+      - AWS_XRAY_URL="*4567-ahmedlekan-awsbootcampc-kl3gd35korz.ws-us118.gitpod.io"
+      - AWS_XRAY_DAEMON_ADDRESS=xray-daemon:2000
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=us-east-1
     build: ./backend-flask
     ports:
       - "4567:4567"
@@ -25,7 +28,7 @@ services:
 
   frontend:
     environment:
-    - REACT_APP_BACKEND_URL=https://4567-ahmedlekan-awsbootcampc-mkbruxb3sox.ws-us118.gitpod.io 
+    - REACT_APP_BACKEND_URL=https://4567-ahmedlekan-awsbootcampc-kl3gd35korz.ws-us118.gitpod.io 
     build: ./frontend-react-js
     ports:
       - "3000:3000"
@@ -78,14 +81,20 @@ services:
       start_period: 10s
   xray-daemon:
     image: amazon/aws-xray-daemon
+    command: ["-o", "-b", "0.0.0.0:2000"]
     environment:
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_REGION: us-east-1
-    command:
-      - "xray -o -b xray-daemon:2000"
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=us-east-1
+      - AWS_EC2_METADATA_DISABLED=true
     ports:
-    - "2000:2000/udp"
+      - "2000:2000/udp"
+    healthcheck:
+      test: ["CMD", "netstat -an | grep :2000"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
 volumes:
   postgres_data:

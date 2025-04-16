@@ -13,24 +13,39 @@ from services.message_groups import *
 from services.messages import *
 from services.create_message import *
 from services.show_activity import *
+
 # X-RAY
 from aws_xray_sdk.core import xray_recorder
 from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
 
+
+def init_xray(app):
+    xray_url = os.getenv("AWS_XRAY_URL")
+    xray_recorder.configure(
+        service='backend-flask',
+        daemon_address=os.getenv('AWS_XRAY_DAEMON_ADDRESS'),
+        dynamic_naming=xray_url
+    )
+    XRayMiddleware(app, xray_recorder)
+
 app = Flask(__name__)
 
-# Configure X-Ray
-xray_url = os.getenv("AWS_XRAY_URL")
-xray_recorder.configure(service='backend-flask', dynamic_naming=xray_url)
-XRayMiddleware(app, xray_recorder)
+init_xray(app)  # Initialize X-Ray
 
-frontend = os.getenv('FRONTEND_URL', "https://3000-ahmedlekan-awsbootcampc-mkbruxb3sox.ws-us118.gitpod.io")
-backend = os.getenv('BACKEND_URL', "https://4567-ahmedlekan-awsbootcampc-mkbruxb3sox.ws-us118.gitpod.io")
+# # Configure X-Ray
+# xray_recorder.configure(
+#     service='backend-flask',
+#     daemon_address=os.getenv('AWS_XRAY_DAEMON_ADDRESS', 'xray-daemon:2000'),
+#     dynamic_naming=os.getenv('AWS_XRAY_URL')
+# )
+
+frontend = os.getenv('FRONTEND_URL', "https://3000-ahmedlekan-awsbootcampc-kl3gd35korz.ws-us118.gitpod.io")
+backend = os.getenv('BACKEND_URL', "https://4567-ahmedlekan-awsbootcampc-kl3gd35korz.ws-us118.gitpod.io")
 origins = [frontend, backend]
 
 cors = CORS(
   app, 
-  resources={r"/api/*": {"origins": "https://3000-ahmedlekan-awsbootcampc-mkbruxb3sox.ws-us118.gitpod.io"}},
+  resources={r"/api/*": {"origins": "https://3000-ahmedlekan-awsbootcampc-kl3gd35korz.ws-us118.gitpod.io"}},
   supports_credentials=True,
   expose_headers=["location", "link"],
   allow_headers=[
@@ -43,7 +58,7 @@ cors = CORS(
 
 @app.after_request
 def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', "https://3000-ahmedlekan-awsbootcampc-mkbruxb3sox.ws-us118.gitpod.io")
+    response.headers.add('Access-Control-Allow-Origin', "https://3000-ahmedlekan-awsbootcampc-kl3gd35korz.ws-us118.gitpod.io")
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
     response.headers.add('Access-Control-Allow-Credentials', 'true')

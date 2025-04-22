@@ -18,7 +18,7 @@ from services.show_activity import *
 from aws_xray_sdk.core import xray_recorder
 from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
 
-
+# """Initialize X-Ray Tracing"""
 def init_xray(app):
     xray_url = os.getenv("AWS_XRAY_URL")
     xray_recorder.configure(
@@ -28,24 +28,20 @@ def init_xray(app):
     )
     XRayMiddleware(app, xray_recorder)
 
+
 app = Flask(__name__)
 
-init_xray(app)  # Initialize X-Ray
+# Initialize X-Ray
+init_xray(app) 
 
-# # Configure X-Ray
-# xray_recorder.configure(
-#     service='backend-flask',
-#     daemon_address=os.getenv('AWS_XRAY_DAEMON_ADDRESS', 'xray-daemon:2000'),
-#     dynamic_naming=os.getenv('AWS_XRAY_URL')
-# )
-
-frontend = os.getenv('FRONTEND_URL', "https://3000-ahmedlekan-awsbootcampc-kl3gd35korz.ws-us118.gitpod.io")
-backend = os.getenv('BACKEND_URL', "https://4567-ahmedlekan-awsbootcampc-kl3gd35korz.ws-us118.gitpod.io")
+gitpod_url = f"https://3000-{os.getenv('GITPOD_WORKSPACE_ID')}.{os.getenv('GITPOD_WORKSPACE_CLUSTER_HOST')}"
+frontend = os.getenv('REACT_APP_FRONTEND_URL', gitpod_url)
+backend = os.getenv('REACT_APP_BACKEND_URL', f"https://4567-{os.getenv('GITPOD_WORKSPACE_ID')}.{os.getenv('GITPOD_WORKSPACE_CLUSTER_HOST')}")
 origins = [frontend, backend]
 
 cors = CORS(
   app, 
-  resources={r"/api/*": {"origins": "https://3000-ahmedlekan-awsbootcampc-kl3gd35korz.ws-us118.gitpod.io"}},
+  resources={r"/api/*": {"origins": origins}},
   supports_credentials=True,
   expose_headers=["location", "link"],
   allow_headers=[
@@ -53,12 +49,13 @@ cors = CORS(
         "Authorization",
         "Access-Control-Allow-Credentials"
     ],
-  methods=["GET","POST","PUT", "PATCH","DELETE","OPTIONS"]
+  methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
 )
+
 
 @app.after_request
 def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', "https://3000-ahmedlekan-awsbootcampc-kl3gd35korz.ws-us118.gitpod.io")
+    response.headers.add('Access-Control-Allow-Origin', frontend)
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
     response.headers.add('Access-Control-Allow-Credentials', 'true')

@@ -2,7 +2,11 @@
 tasks:
     - name: aws-cli
       env:
-        AWS_CLI_AUTO_PROMPT: on-partial    
+        AWS_CLI_AUTO_PROMPT: on-partial
+        GITPOD_WORKSPACE_ID: $GITPOD_WORKSPACE_ID
+        GITPOD_WORKSPACE_CLUSTER_HOST: $GITPOD_WORKSPACE_CLUSTER_HOST
+        REACT_APP_BACKEND_URL: https://4567-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}
+        REACT_APP_FRONTEND_URL: https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}    
       init: |
         cd /workspace
         curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"

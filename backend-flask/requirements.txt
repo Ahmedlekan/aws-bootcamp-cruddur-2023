@@ -9,3 +9,5 @@ opentelemetry-instrumentation-requests
 opentelemetry-exporter-otlp
 
 aws-xray-sdk
+
+watchtower

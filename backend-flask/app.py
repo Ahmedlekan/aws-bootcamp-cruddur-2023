@@ -34,9 +34,9 @@ app = Flask(__name__)
 # Initialize X-Ray
 init_xray(app) 
 
-gitpod_url = f"https://3000-{os.getenv('GITPOD_WORKSPACE_ID')}.{os.getenv('GITPOD_WORKSPACE_CLUSTER_HOST')}"
-frontend = os.getenv('REACT_APP_FRONTEND_URL', gitpod_url)
-backend = os.getenv('REACT_APP_BACKEND_URL', f"https://4567-{os.getenv('GITPOD_WORKSPACE_ID')}.{os.getenv('GITPOD_WORKSPACE_CLUSTER_HOST')}")
+frontend ="https://${CODESPACE_NAME}-3000.&{GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
+backend ="https://${CODESPACE_NAME}-3000.&{GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
+
 origins = [frontend, backend]
 
 cors = CORS(

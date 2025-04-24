@@ -34,8 +34,10 @@ app = Flask(__name__)
 # Initialize X-Ray
 init_xray(app) 
 
-frontend ="https://${CODESPACE_NAME}-3000.&{GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
-backend ="https://${CODESPACE_NAME}-3000.&{GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
+codespace_name = os.getenv("CODESPACE_NAME")
+# Define actual frontend/backend origins
+frontend = f"https://3000-{codespace_name}.app.github.dev"
+backend = f"https://4567-{codespace_name}.app.github.dev"
 
 origins = [frontend, backend]
 
@@ -52,10 +54,9 @@ cors = CORS(
   methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
 )
 
-
 @app.after_request
 def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', frontend)
+    response.headers.add('Access-Control-Allow-Origin', "*")
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
     response.headers.add('Access-Control-Allow-Credentials', 'true')
@@ -102,7 +103,7 @@ def data_home():
         return {}, 200
     data = HomeActivities.run()
     return data, 200
-
+    
 @app.route("/api/activities/notifications", methods=['GET'])
 def data_notifications():
   data = NotificationsActivities.run()

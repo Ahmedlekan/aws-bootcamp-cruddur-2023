@@ -11,6 +11,7 @@ import ReplyForm from '../components/ReplyForm';
 import Cookies from 'js-cookie'
 
 export default function HomeFeedPage() {
+
   const [activities, setActivities] = React.useState([]);
   const [popped, setPopped] = React.useState(false);
   const [poppedReply, setPoppedReply] = React.useState(false);
@@ -29,9 +30,17 @@ export default function HomeFeedPage() {
         credentials: "include"
       });
 
-      let resJson = await res.json();
+      const text = await res.text();
+      console.log("Raw text response:", text);
       
-      console.log("Response:", resJson);
+      let resJson;
+      try {
+        resJson = JSON.parse(text);
+        setActivities(resJson);
+      } catch (err) {
+        console.error("❌ JSON parse failed:", err);
+        return;
+      }
 
       if (res.status === 200) {
         // Update the activities state with the fetched data

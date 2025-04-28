@@ -29,16 +29,18 @@ def init_xray(app):
     )
     XRayMiddleware(app, xray_recorder)
 
-
 app = Flask(__name__)
 
 # Initialize X-Ray
 init_xray(app) 
 
-codespace_name = os.getenv("CODESPACE_NAME")
+# codespace_name = os.getenv("CODESPACE_NAME")
 # Define actual frontend/backend origins
-frontend = f"https://3000-{codespace_name}.app.github.dev"
-backend = f"https://4567-{codespace_name}.app.github.dev"
+# frontend = f"https://3000-{codespace_name}.app.github.dev"
+# backend = f"https://4567-{codespace_name}.app.github.dev"
+
+frontend = "https://3000-ahmedlekan-awsbootcampc-lz857wdtkn3.ws-us118.gitpod.io"
+backend = "https://4567-ahmedlekan-awsbootcampc-lz857wdtkn3.ws-us118.gitpod.io"
 
 origins = [frontend, backend]
 
@@ -57,7 +59,7 @@ cors = CORS(
 
 @app.after_request
 def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', origins)
+    response.headers.add('Access-Control-Allow-Origin', frontend)
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
     response.headers.add('Access-Control-Allow-Credentials', 'true')

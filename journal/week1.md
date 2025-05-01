@@ -1,4 +1,4 @@
-# Week 1 — Docker and App Containerization
+# Docker and App Containerization
 
 ### Business Scenario
 

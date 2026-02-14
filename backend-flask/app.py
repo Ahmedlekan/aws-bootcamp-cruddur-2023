@@ -1,4 +1,5 @@
 from flask import Flask
+from flask import jsonify
 from flask import request
 from flask_cors import CORS, cross_origin
 import os
@@ -24,8 +25,12 @@ cors = CORS(
   resources={r"/api/*": {"origins": origins}},
   supports_credentials=True,
   expose_headers=["location", "link"],
-  allow_headers=["content-type", "if-modified-since"],
-  methods=["OPTIONS", "GET", "HEAD", "POST"]
+  allow_headers=[
+        "Content-Type",
+        "Authorization",
+        "Access-Control-Allow-Credentials"
+    ],
+  methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
 )
 
 @app.after_request
@@ -71,14 +76,17 @@ def data_create_message():
     return model['data'], 200
   return
 
-@app.route("/api/activities/home", methods=['GET'])
+@app.route("/api/activities/home", methods=['GET', 'OPTIONS'])
 def data_home():
-  data = HomeActivities.run()
-  return data, 200
-
+    if request.method == 'OPTIONS':
+        return {}, 200
+    data = HomeActivities.run()
+    return jsonify(data), 200
+    
 @app.route("/api/activities/notifications", methods=['GET'])
 def data_notifications():
   data = NotificationsActivities.run()
+  print("📦 Returning data:", data) 
   return data, 200
 
 @app.route("/api/activities/@<string:handle>", methods=['GET'])

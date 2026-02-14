@@ -11,6 +11,7 @@ import ReplyForm from '../components/ReplyForm';
 import Cookies from 'js-cookie'
 
 export default function HomeFeedPage() {
+
   const [activities, setActivities] = React.useState([]);
   const [popped, setPopped] = React.useState(false);
   const [poppedReply, setPoppedReply] = React.useState(false);
@@ -22,18 +23,28 @@ export default function HomeFeedPage() {
     try {
       const backend_url = `${process.env.REACT_APP_BACKEND_URL}/api/activities/home`
 
-      console.log("Fetching from:", backend_url);
+      console.log(backend_url)
 
       const res = await fetch(backend_url, {
         method: "GET",
         credentials: "include"
       });
-      let resJson = await res.json();
+
+      const text = await res.text();
+      console.log("Raw text response:", text);
       
-      console.log("Response:", resJson);
+      let resJson;
+      try {
+        resJson = JSON.parse(text);
+        setActivities(resJson);
+      } catch (err) {
+        console.error("❌ JSON parse failed:", err);
+        return;
+      }
 
       if (res.status === 200) {
         // Update the activities state with the fetched data
+        console.log(resJson)
         setActivities(resJson);
       } else if (res.status === 401) {
         console.log("Unauthorized: Please log in.");
@@ -46,7 +57,7 @@ export default function HomeFeedPage() {
   };
 
   const checkAuth = async () => {
-    console.log('checkAuth')
+    
     // [TODO] Authenication
     if (Cookies.get('user.logged_in')) {
       setUser({

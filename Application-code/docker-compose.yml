@@ -1,0 +1,64 @@
+version: "3.8"
+services:
+  backend-flask:
+    environment:
+      - REACT_APP_BACKEND_URL=http://backend-flask:5000
+      - REACT_APP_FRONTEND_URL=http://frontend:3000
+    build: ./backend-flask
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend-flask:/backend-flask
+    networks:
+    - internal-network
+    command: python3 -m flask run --host=0.0.0.0 --port=5000
+    depends_on:
+      - postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://backend-flask:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  frontend:
+    environment:
+    - REACT_APP_BACKEND_URL=http://backend-flask:5000
+    build: ./frontend-react-js
+    ports:
+      - "3000:80"
+    networks:
+    - internal-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://frontend:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  postgres:
+    image: postgres:13-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - internal-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  postgres_data:
+
+networks:
+  internal-network:
+    driver: bridge
+    name: cruddur

@@ -1,0 +1,178 @@
+pipeline {
+    agent any     
+    tools {
+        nodejs 'nodejs'
+    }
+
+    environment  {
+        SCANNER_HOME= tool('sonar-scanner')
+        SONAR_TOKEN = credentials('sonar-token')
+        AWS_ACCOUNT_ID = credentials('ACCOUNT_ID')
+        AWS_ECR_REPO_NAME = credentials('ECR_FRONTEND_REACT')
+        AWS_DEFAULT_REGION = 'us-east-1'
+        REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/"
+        GIT_USER_NAME = 'Ahmedlekan'
+        GIT_REPO_NAME = 'aws-bootcamp-cruddur-2023'
+        GIT_TOKEN = credentials('github-token')
+    }
+
+    stages {
+
+        stage('Cleaning Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        
+        stage('Checkout from Git') {
+            steps {
+                git branch: 'main', credentialsId: 'github-creds', url: 'https://github.com/Ahmedlekan/aws-bootcamp-cruddur-2023.git'
+            }
+        }
+        
+        stage('Sonarqube Analysis') {
+            steps {
+                dir('Application-code/frontend-react-js') {
+                    withSonarQubeEnv('sonar-server') {
+                        sh ''' 
+                        $SCANNER_HOME/bin/sonar-scanner \
+                        -Dsonar.projectName=frontend-react \
+                        -Dsonar.projectKey=frontend-react \
+                        -Dsonar.sources=src \
+                        -Dsonar.exclusions=node_modules/**,dist/** \
+                        -Dsonar.sourceEncoding=UTF-8 \
+                        '''
+                    }
+                }
+            }
+        }
+        // stage('Quality Check') {
+        //     steps {
+        //         script {
+        //             waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token' 
+        //         }
+        //     }
+        // }
+
+        stage('QualityGates') {
+            steps { 
+                echo "Running Quality Gates to verify the code quality"
+                script {
+                timeout(time: 1, unit: 'MINUTES') {
+                    def qg = waitForQualityGate()
+                    if (qg.status != 'OK') {
+                    error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                    }
+                }
+                }
+            }
+        }
+        // stage('OWASP Dependency-Check Scan') {
+        //     steps {
+        //         dir('Application-code/frontend') {
+        //             dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
+        //             dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+        //         }
+        //     }
+        // }
+        stage('Trivy File Scan') {
+            steps {
+                dir('Application-code/frontend-react-js') {
+                    sh 'trivy fs . > trivyfs.txt'
+                }
+            }
+        }
+        stage("Docker Image Build") {
+            steps {
+                script {
+                    dir('Application-code/frontend-react-js') {
+                            sh 'docker system prune -f'
+                            sh 'docker container prune -f'
+                            sh 'docker build -t ${AWS_ECR_REPO_NAME} .'
+                    }
+                }
+            }
+        }
+        stage("ECR Image Pushing") {
+            steps {
+                script {
+                        sh 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${REPOSITORY_URI}'
+                        sh 'docker tag ${AWS_ECR_REPO_NAME} ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${BUILD_NUMBER}'
+                        sh 'docker push ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${BUILD_NUMBER}'
+                }
+            }
+        }
+        stage("TRIVY Image Scan") {
+            steps {
+                sh 'trivy image ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${BUILD_NUMBER} > trivyimage.txt' 
+            }
+        }
+        // stage('Update Deployment file') {
+        //     steps {
+        //         script {
+        //             // First, make sure we're in the root of the repository
+        //             dir('') {
+        //                 withCredentials([string(credentialsId: 'github-token', variable: 'GIT_TOKEN')]) {
+        //                     sh '''
+        //                         set -e
+                                
+        //                         # Configure git
+        //                         git config --global user.email "diplomaticfatman66@gmail.com"
+        //                         git config --global user.name "Ahmed Lekan"
+                                
+        //                         # Navigate to the correct directory
+        //                         cd Kubernetes-Manifests-file/Frontend || {
+        //                             echo "ERROR: Kubernetes-Manifests-file/Frontend directory not found!"
+        //                             echo "Current directory contents:"
+        //                             ls -la
+        //                             exit 1
+        //                         }
+                                
+        //                         echo "=== Current directory ==="
+        //                         pwd
+        //                         ls -la
+                                
+        //                         # Check if deployment.yaml exists
+        //                         if [ ! -f "deployment.yaml" ]; then
+        //                             echo "ERROR: deployment.yaml not found!"
+        //                             exit 1
+        //                         fi
+                                
+        //                         echo "=== BEFORE UPDATE ==="
+        //                         grep "image:" deployment.yaml || true
+                                
+        //                         # Construct the new image URL
+        //                         NEW_IMAGE="${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${BUILD_NUMBER}"
+        //                         echo "Updating image to: $NEW_IMAGE"
+                                
+        //                         # Update the image in deployment.yaml
+        //                         sed -i.bak "s|image:.*|image: ${NEW_IMAGE}|" deployment.yaml
+                                
+        //                         echo "=== AFTER UPDATE ==="
+        //                         grep "image:" deployment.yaml || true
+                                
+        //                         # Return to root directory for git operations
+        //                         cd ../..
+                                
+        //                         # Stage the changes
+        //                         git add Kubernetes-Manifests-file/Frontend/deployment.yaml
+                                
+        //                         # Check if there are changes
+        //                         if ! git diff --cached --quiet; then
+        //                             echo "Changes detected, committing..."
+        //                             git commit -m "CI/CD: Update frontend image to ${BUILD_NUMBER}"
+                                    
+        //                             # Push using the token
+        //                             git push https://${GIT_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:main
+        //                             echo "Push successful!"
+        //                         else
+        //                             echo "No changes to commit"
+        //                         fi
+        //                     '''
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+    }
+}

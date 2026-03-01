@@ -37,8 +37,8 @@ pipeline {
                     withSonarQubeEnv('sonar-server') {
                         sh '''
                         $SCANNER_HOME/bin/sonar-scanner \
-                        -Dsonar.projectName=backend-flask \
-                        -Dsonar.projectKey=backend-flask \
+                        -Dsonar.projectName=backend-python \
+                        -Dsonar.projectKey=backend-python \
                         -Dsonar.sources=. \
                         -Dsonar.language=py \
                         -Dsonar.sourceEncoding=UTF-8

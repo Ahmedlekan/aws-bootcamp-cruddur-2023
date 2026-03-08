@@ -6,7 +6,7 @@ pipeline {
         SONAR_TOKEN = credentials('sonar-token')
 
         AWS_ACCOUNT_ID = credentials('ACCOUNT_ID')
-        AWS_ECR_REPO_NAME = credentials('ECR_BACKEND_FLASK')
+        AWS_ECR_REPO_NAME = credentials('ECR_BACKEND_PYTHON')
         AWS_DEFAULT_REGION = 'us-east-1'
         REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/"
 

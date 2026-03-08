@@ -3,3 +3,11 @@ flask-cors
 aws-xray-sdk
 watchtower
 gunicorn
+
+
+pip install opentelemetry-api
+pip install opentelemetry-sdk
+pip install opentelemetry-exporter-otlp
+pip install opentelemetry-instrumentation-flask
+pip install opentelemetry-instrumentation-requests
+

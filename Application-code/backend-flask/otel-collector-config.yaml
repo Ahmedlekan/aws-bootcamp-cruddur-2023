@@ -1,0 +1,31 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+    timeout: 1s
+    send_batch_size: 1024
+
+exporters:
+  # Use OTLP exporter instead of deprecated jaeger exporter
+  otlp/jaeger:
+    endpoint: jaeger:4317  # Jaeger's OTLP gRPC port
+    tls:
+      insecure: true
+    # For HTTP instead of gRPC, use: endpoint: http://jaeger:4318
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp/jaeger]
+
+
+
+  

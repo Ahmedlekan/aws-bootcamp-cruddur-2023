@@ -1,0 +1,168 @@
+
+  {
+    "id": null,
+    "uid": "cruddur-dashboard",
+    "title": "Cruddur Application Dashboard",
+    "tags": ["cruddur", "flask"],
+    "timezone": "browser",
+    "schemaVersion": 38,
+    "refresh": "30s",
+    "version": 1,
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "templating": {
+      "list": []
+    },
+    "annotations": {
+      "list": []
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Request Rate (per second)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(rate(cruddur_http_requests_total[5m]))",
+            "legendFormat": "Requests/sec"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 10},
+                {"color": "red", "value": 50}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Total Requests by Route",
+        "type": "bargauge",
+        "targets": [
+          {
+            "expr": "sum by (route) (cruddur_http_requests_total)",
+            "legendFormat": "{{route}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Error Rate (%)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "rate(cruddur_http_errors_total[5m]) / rate(cruddur_http_requests_total[5m]) * 100",
+            "legendFormat": "Error %"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 5},
+                {"color": "red", "value": 10}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "Average Request Duration",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "avg(rate(cruddur_http_request_duration_seconds_sum[5m]) / rate(cruddur_http_request_duration_seconds_count[5m]))",
+            "legendFormat": "Avg Duration"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s",
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 0.1},
+                {"color": "red", "value": 0.5}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 8}
+      },
+      {
+        "id": 5,
+        "title": "Active Requests",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "cruddur_http_active_requests",
+            "legendFormat": "Active"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 20},
+                {"color": "red", "value": 50}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 8}
+      },
+      {
+        "id": 6,
+        "title": "Business Metrics: Activities Created",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "cruddur_activities_created_total",
+            "legendFormat": "Total Activities"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 7,
+        "title": "Business Metrics: Messages Sent",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "cruddur_messages_sent_total",
+            "legendFormat": "Total Messages"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+      },
+      {
+        "id": 8,
+        "title": "Request Duration Distribution (95th percentile)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(cruddur_http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "95th percentile"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 24}
+      }
+    ]
+  }

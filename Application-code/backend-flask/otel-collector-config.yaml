@@ -19,12 +19,28 @@ exporters:
       insecure: true
     # For HTTP instead of gRPC, use: endpoint: http://jaeger:4318
 
+# NEW: Prometheus exporter
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+    namespace: "cruddur"
+    const_labels:
+      service: "backend-flask"
+  
+  # Debug exporter (optional, for troubleshooting)
+  debug:
+    verbosity: detailed
+
 service:
   pipelines:
     traces:
       receivers: [otlp]
       processors: [batch]
       exporters: [otlp/jaeger]
+    
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [prometheus, debug]
 
 
 

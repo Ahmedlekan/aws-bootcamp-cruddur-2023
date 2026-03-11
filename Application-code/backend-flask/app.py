@@ -5,7 +5,7 @@ from flask_cors import CORS, cross_origin
 import os
 
 import tracing
-from tracing import tracer
+from tracing import tracer, meter, http_requests_total, http_errors_total, http_request_duration_seconds, http_active_requests, activities_created_total, messages_sent_total
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
 
 from services.home_activities import *
@@ -38,8 +38,45 @@ cors = CORS(
   methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
 )
 
+# ========== METRICS MIDDLEWARE ==========
+@app.before_request
+def before_request():
+    # Track active requests
+    http_active_requests.add(1)
+    # Store start time for duration calculation
+    request.start_time = time.time()
+
 @app.after_request
 def after_request(response):
+    # Calculate duration
+    duration = time.time() - getattr(request, 'start_time', time.time())
+    
+    # Get route pattern (e.g., "/api/activities/home")
+    route = request.endpoint or "unknown"
+    
+    # Record metrics
+    http_requests_total.add(1, {
+        "method": request.method,
+        "route": route,
+        "status": str(response.status_code)
+    })
+
+    http_request_duration_seconds.record(duration, {
+        "method": request.method,
+        "route": route
+    })
+
+    # Track errors (4xx and 5xx)
+    if response.status_code >= 400:
+        http_errors_total.add(1, {
+            "method": request.method,
+            "route": route,
+            "status": str(response.status_code)
+        })
+    
+    # Decrease active requests
+    http_active_requests.add(-1)
+
     response.headers.add('Access-Control-Allow-Origin', frontend)
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
@@ -99,6 +136,14 @@ def data_create_message():
         if model['errors'] is not None:
             span.set_attribute("error", True)
             return model['errors'], 422
+        
+        # BUSINESS METRIC: Message sent
+        messages_sent_total.add(1, {
+            "sender": user_sender_handle,
+            "receiver": user_receiver_handle,
+            "message_length_bucket": "short" if len(message) < 50 else "long"
+        })
+
         return model['data'], 200
 
 @app.route("/api/activities/home", methods=['GET', 'OPTIONS'])
@@ -175,6 +220,13 @@ def data_activities():
         if model['errors'] is not None:
             span.set_attribute("error", True)
             return model['errors'], 422
+        
+        # BUSINESS METRIC: Activity created
+        activities_created_total.add(1, {
+            "user": user_handle,
+            "ttl": str(ttl),
+            "has_message": str(len(message) > 0)
+        })
         return model['data'], 200
 
 @app.route("/api/activities/<string:activity_uuid>", methods=['GET'])
